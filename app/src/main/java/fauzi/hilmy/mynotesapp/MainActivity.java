@@ -1,6 +1,7 @@
 package fauzi.hilmy.mynotesapp;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -19,15 +20,17 @@ import fauzi.hilmy.mynotesapp.db.NoteHelper;
 import fauzi.hilmy.mynotesapp.entity.Note;
 
 import static fauzi.hilmy.mynotesapp.FormAddUpdateActivity.REQUEST_UPDATE;
+import static fauzi.hilmy.mynotesapp.db.DatabaseContract.CONTENT_URI;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     RecyclerView rvNotes;
     ProgressBar progressBar;
     FloatingActionButton fabAdd;
 
-    private LinkedList<Note> list;
+    private Cursor list;
+    //    private LinkedList<Note> list;
     private NoteAdapter adapter;
-    private NoteHelper noteHelper;
+//    private NoteHelper noteHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,10 +47,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         fabAdd = findViewById(R.id.fab_add);
         fabAdd.setOnClickListener(this);
 
-        noteHelper = new NoteHelper(this);
-        noteHelper.open();
+//        noteHelper = new NoteHelper(this);
+//        noteHelper.open();
 
-        list = new LinkedList<>();
+//        list = new LinkedList<>();
 
         adapter = new NoteAdapter(this);
         adapter.setListNotes(list);
@@ -64,38 +67,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.fab_add){
+        if (view.getId() == R.id.fab_add) {
             Intent intent = new Intent(MainActivity.this, FormAddUpdateActivity.class);
             startActivityForResult(intent, FormAddUpdateActivity.REQUEST_ADD);
         }
     }
 
-    private class LoadNoteAsync extends AsyncTask<Void, Void, ArrayList<Note>> {
+    private class LoadNoteAsync extends AsyncTask<Void, Void, Cursor> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             progressBar.setVisibility(View.VISIBLE);
 
-            if (list.size() > 0){
-                list.clear();
-            }
+//            if (list.size() > 0) {
+//                list.clear();
+//            }
         }
 
         @Override
-        protected ArrayList<Note> doInBackground(Void... voids) {
-            return noteHelper.query();
+        protected Cursor doInBackground(Void... voids) {
+            return getContentResolver().query(CONTENT_URI, null, null, null, null);
+//            return noteHelper.query();
         }
 
         @Override
-        protected void onPostExecute(ArrayList<Note> notes) {
+        protected void onPostExecute(Cursor notes) {
             super.onPostExecute(notes);
             progressBar.setVisibility(View.GONE);
 
-            list.addAll(notes);
+//            list.addAll(notes);
+            list = notes;
             adapter.setListNotes(list);
             adapter.notifyDataSetChanged();
 
-            if (list.size() == 0){
+            if (list.getCount() == 0) {
                 showSnackbarMessage("Tidak ada data saat ini");
             }
         }
@@ -104,27 +109,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == FormAddUpdateActivity.REQUEST_ADD){
-            if (resultCode == FormAddUpdateActivity.RESULT_ADD){
+        if (requestCode == FormAddUpdateActivity.REQUEST_ADD) {
+            if (resultCode == FormAddUpdateActivity.RESULT_ADD) {
                 new LoadNoteAsync().execute();
                 showSnackbarMessage("Satu item berhasil ditambahkan");
                 // rvNotes.getLayoutManager().smoothScrollToPosition(rvNotes, new RecyclerView.State(), 0);
             }
-        }
-        else if (requestCode == REQUEST_UPDATE) {
+        } else if (requestCode == REQUEST_UPDATE) {
 
             if (resultCode == FormAddUpdateActivity.RESULT_UPDATE) {
                 new LoadNoteAsync().execute();
                 showSnackbarMessage("Satu item berhasil diubah");
                 // int position = data.getIntExtra(FormAddUpdateActivity.EXTRA_POSITION, 0);
                 // rvNotes.getLayoutManager().smoothScrollToPosition(rvNotes, new RecyclerView.State(), position);
-            }
-
-            else if (resultCode == FormAddUpdateActivity.RESULT_DELETE) {
-                int position = data.getIntExtra(FormAddUpdateActivity.EXTRA_POSITION, 0);
-                list.remove(position);
-                adapter.setListNotes(list);
-                adapter.notifyDataSetChanged();
+            } else if (resultCode == FormAddUpdateActivity.RESULT_DELETE) {
+//                int position = data.getIntExtra(FormAddUpdateActivity.EXTRA_POSITION, 0);
+//                list.remove(position);
+//                adapter.setListNotes(list);
+//                adapter.notifyDataSetChanged();
+                new LoadNoteAsync().execute();
                 showSnackbarMessage("Satu item berhasil dihapus");
             }
         }
@@ -133,12 +136,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (noteHelper != null){
-            noteHelper.close();
-        }
+//        if (noteHelper != null){
+//            noteHelper.close();
+//        }
     }
 
-    private void showSnackbarMessage(String message){
+    private void showSnackbarMessage(String message) {
         Snackbar.make(rvNotes, message, Snackbar.LENGTH_SHORT).show();
     }
 }

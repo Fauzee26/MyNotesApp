@@ -1,4 +1,4 @@
-package fauzi.hilmy.mynotesapp.db;
+package fauzi.hilmy.dicodingnotesapp;
 
 import android.database.Cursor;
 import android.net.Uri;

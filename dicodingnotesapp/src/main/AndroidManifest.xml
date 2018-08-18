@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="fauzi.hilmy.mynotesapp">
+    package="fauzi.hilmy.dicodingnotesapp">
 
-    <permission
-        android:name="fauzi.hilmy.mynotesapp.READ_DATABASE"
-        android:protectionLevel="normal" />
-    <permission
-        android:name="fauzi.hilmy.mynotesapp.WRITE_DATABASE"
-        android:protectionLevel="normal" />
+    <uses-permission android:name="fauzi.hilmy.mynotesapp.READ_DATABASE" />
+    <uses-permission android:name="fauzi.hilmy.mynotesapp.WRITE_DATABASE" />
 
     <application
         android:allowBackup="true"
@@ -23,14 +19,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".FormAddUpdateActivity" />
-
-        <provider
-            android:name=".provider.NoteProvider"
-            android:authorities="fauzi.hilmy.mynotesapp"
-            android:exported="true"
-            android:readPermission="fauzi.hilmy.mynotesapp.READ_DATABASE"
-            android:writePermission="fauzi.hilmy.mynotesapp.WRITE_DATABASE" />
+        <activity android:name=".FormActivity"></activity>
     </application>
 
 </manifest>
